@@ -1,0 +1,318 @@
+/* 
+
+System Zarzadzani Biblioteką
+
+Projekt koncentruje się na stworzeniu kompleksowego systemu, który umożliwi śledzenie dostępnych książek, 
+zarządzanie autorami, danych czytelników oraz rejestrację wypożyczeń. Głównym celem tego systemu jest zapewnienie 
+klarownej struktury danych, umożliwiającej łatwe wyszukiwanie książek, monitorowanie wypożyczeń oraz zapewnienie 
+czytelnikom dostępu do interesującej literatury. Projekt skupia się na wykorzystaniu bazy danych w oparciu o MySQL,
+umożliwiając użytkownikom zarządzanie danymi. 
+
+*/
+
+CREATE DATABASE Library;
+
+USE Library;
+
+/*
+
+Stworzenie tabel dla całej bazy danych oraz ograniczeń i odpowiednie połączenie za pomocą kluczy podstawowych
+i obcych. 
+
+*/
+
+CREATE TABLE Authors (
+    author_id VARCHAR(10) PRIMARY KEY,
+    author_full_name VARCHAR(32) NOT NULL,
+    CONSTRAINT check_author_id_format CHECK (CHAR_LENGTH(author_id) = 10
+        AND author_id REGEXP '^[A-Z]{4}[0-9]{1,6}$')
+);
+
+CREATE TABLE Books (
+    book_id VARCHAR(9) PRIMARY KEY,
+    title VARCHAR(64),
+    author_id VARCHAR(10) NOT NULL,
+    publication_year DATE,
+    genre VARCHAR(32),
+    available ENUM('TAK', 'NIE'),
+    CONSTRAINT check_book_id_format CHECK (CHAR_LENGTH(book_id) = 9
+        AND book_id REGEXP '^[A-Z]{3}[0-9]{1,6}$'),
+    CONSTRAINT check_author_id_books_format CHECK (CHAR_LENGTH(author_id) = 10
+        AND author_id REGEXP '^[A-Z]{4}[0-9]{1,6}$'),
+    FOREIGN KEY (author_id)
+        REFERENCES Authors (author_id)
+);
+
+CREATE TABLE readers (
+    reader_id INT AUTO_INCREMENT PRIMARY KEY,
+    reader_full_name VARCHAR(64) NOT NULL,
+    email VARCHAR(64) NOT NULL,
+    phone_number INT NOT NULL
+);
+
+CREATE TABLE calendar (
+    full_date DATE PRIMARY KEY
+);
+
+CREATE TABLE loans (
+    loan_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id VARCHAR(9) NOT NULL,
+    reader_id INT NOT NULL,
+    loan_date DATE NOT NULL,
+    CONSTRAINT check_book_id_loans_format CHECK (CHAR_LENGTH(book_id) = 9
+        AND book_id REGEXP '^[A-Z]{3}[0-9]{1,6}$'),
+    FOREIGN KEY (book_id)
+        REFERENCES books (book_id),
+    FOREIGN KEY (reader_id)
+        REFERENCES readers (reader_id),
+    FOREIGN KEY (loan_date)
+        REFERENCES calendar (full_date)
+);
+
+CREATE TABLE return_of (
+    return_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id VARCHAR(9) NOT NULL,
+    reader_id INT NOT NULL,
+    return_date DATE NOT NULL,
+    CONSTRAINT check_book_id_return_format CHECK (CHAR_LENGTH(book_id) = 9
+        AND book_id REGEXP '^[A-Z]{3}[0-9]{1,6}$'),
+    FOREIGN KEY (book_id)
+        REFERENCES books (book_id),
+    FOREIGN KEY (reader_id)
+        REFERENCES readers (reader_id),
+    FOREIGN KEY (return_date)
+        REFERENCES calendar (full_date)
+);
+
+/*
+
+Wprowadzenie przykładowych danych do tabel i prawidłowa implementacja.
+
+*/
+
+INSERT INTO authors (author_id, author_full_name) VALUES
+('ABCD736483','Iwan Nawrocki'),
+('EFGH125678','Maria Kowalska'),
+('IJKL987601','Piotr Nowak'),
+('MNOP345879','Anna Wiśniewska'),
+('QRST783246','Wojciech Dąbrowski'),
+('UVWX903456','Zofia Lewandowska'),
+('YZAB789034','Michał Woźniak'),
+('CDEF645312','Katarzyna Kamińska'),
+('GHIJ876234','Marek Jankowski'),
+('KLMN987234','Agnieszka Kaczmarek'),
+('OPQR356723','Bartosz Zieliński'),
+('STUV876590','Ewa Szymańska'),
+('WXYZ346789','Krzysztof Wójcik'),
+('BCDE234786','Magdalena Grabowska'),
+('FGHI569012','Damian Nowakowski'),
+('JKLM781234','Karolina Pawlak'),
+('NOPQ124567','Rafał Adamczyk'),
+('RSTU890234','Joanna Zając'),
+('VWXY456789','Paweł Król');
+
+INSERT INTO books (book_id, title, author_id, publication_year, genre, available) VALUES 
+('ABC123456',"Echoes of Dawn",'ABCD736483','1990-05-15','Fantastyka','TAK'),
+('DEF234567',"Whispers in Silence",'EFGH125678','2005-11-28','Romans','TAK'),
+('GHI345678',"Fragments of Fate",'IJKL987601','2010-09-03','Kryminał','TAK'),
+('JKL456789',"Shadows of Serenity",'MNOP345879','2005-11-28','Dramat','TAK'),
+('MNO567890',"Embers of Eternity",'QRST783246','2015-08-12','Horror','TAK'),
+('PQR678901',"Ripples of Time",'UVWX903456','1990-05-15','Fantastyka','NIE'),
+('STU789012',"Threads of Destiny",'YZAB789034','2000-12-07','Dramat','NIE'),
+('YZA901234',"Sands of Solitude",'CDEF645312','2018-06-30','Horror','NIE'),
+('BCD012345',"Wings of Wonder",'GHIJ876234','2005-11-28','Fantastyka','NIE'),
+('EFG123456',"Visions Unseen",'KLMN987234','1990-05-15','Komedia','NIE'),
+('HIJ234567',"Fireside Tales",'OPQR356723','2010-09-03','Thriller','TAK'),
+('KLM345678',"The Silent Path",'STUV876590','2000-12-07','Horror','TAK'),
+('NOP456789',"Stardust Symphony",'WXYZ346789','2018-06-30','Fantastyka','TAK'),
+('QRS567890',"Harbor of Dreams",'BCDE234786','1995-04-21','Komedia','TAK'),
+('TUV678901',"Secrets Revealed",'FGHI569012','2005-11-28','Thriller','TAK'),
+('WXY789012',"Lost Horizons",'JKLM781234','2010-09-03','Dramat','NIE'),
+('ZAB890123',"Enigma's Edge",'NOPQ124567','1990-05-15','Fantastyka','NIE'),
+('CDE901234',"Echoes of Tomorrow",'RSTU890234','2018-06-30','Komedia','NIE'),
+('FGH012345',"Journey to Infinity",'VWXY456789','1997-06-22','Horror','NIE');
+
+INSERT INTO readers (reader_id, reader_full_name, email, phone_number) VALUES
+('1','John Smith', 'john.smith@email.com', '+1234567890'),
+('2','Emily Johnson', 'emily.johnson@email.com', '+1987654321'),
+('3','Michael Davis', 'michael.davis@email.com', '+1444777999'),
+('4','Sarah Brown', 'sarah.brown@email.com', '+1555666777'),
+('5','Daniel Wilson', 'daniel.wilson@email.com', '+1666888999'),
+('6','Olivia Garcia', 'olivia.garcia@email.com', '+1777999888'),
+('7','William Miller', 'william.miller@email.com', '+1888999777'),
+('8','Sophia Martinez', 'sophia.martinez@email.com', '+1999888666'),
+('9','Liam Anderson', 'liam.anderson@email.com', '+1000111222'),
+('10','Emma Thompson', 'emma.thompson@email.com', '+1222333444'),
+('11','Noah Lee', 'noah.lee@email.com', '+1333444555'),
+('12','Ava Hernandez', 'ava.hernandez@email.com', '+1444555666'),
+('13','James Taylor', 'james.taylor@email.com', '+1555666777'),
+('14','Isabella Clark', 'isabella.clark@email.com', '+1666777888'),
+('15','Benjamin Garcia', 'benjamin.garcia@email.com', '+1777888999'),
+('16','Mia Wilson', 'mia.wilson@email.com', '+1888999111'),
+('17','Ethan Davis', 'ethan.davis@email.com', '+1999111222'),
+('18','Charlotte Moore', 'charlotte.moore@email.com', '+1222333444'),
+('19','Amelia Rodriguez', 'amelia.rodriguez@email.com', '+1333444555');
+
+INSERT INTO calendar (full_date) VALUES
+('2023-11-01'),
+('2023-11-02'),
+('2023-11-03'),
+('2023-11-04'),
+('2023-11-05'),
+('2023-11-06'),
+('2023-11-07'),
+('2023-11-08'),
+('2023-11-09'),
+('2023-11-10'),
+('2023-11-11'),
+('2023-11-12'),
+('2023-11-13'),
+('2023-11-14'),
+('2023-11-15'),
+('2023-11-16'),
+('2023-11-17'),
+('2023-11-18'),
+('2023-11-19'),
+('2023-11-20'),
+('2023-11-21'),
+('2023-11-22'),
+('2023-11-23'),
+('2023-11-24'),
+('2023-11-25'),
+('2023-11-26'),
+('2023-11-27'),
+('2023-11-28'),
+('2023-11-29'),
+('2023-11-30'),
+('2023-12-01');
+
+INSERT INTO loans (loan_id, book_id, reader_id, loan_date) VALUES
+('1','PQR678901','1','2023-11-12'),
+('2','STU789012','4','2023-11-14'),
+('3','YZA901234','5','2023-11-14'),
+('4','BCD012345','7','2023-11-18'),
+('5','EFG123456','9','2023-11-27'),
+('6','WXY789012','11','2023-11-27'),
+('7','ZAB890123','12','2023-11-04'),
+('8','CDE901234','14','2023-11-08'),
+('9','FGH012345','15','2023-12-01');
+
+INSERT INTO return_of (return_id, book_id, reader_id, return_date) VALUES
+('1','ABC123456','2','2023-11-04'),
+('2','DEF234567','3','2023-11-07'),
+('3','GHI345678','6','2023-11-15'),
+('4','JKL456789','8','2023-11-22'),
+('5','MNO567890','10','2023-11-22'),
+('6','HIJ234567','13','2023-11-28'),
+('7','KLM345678','14','2023-11-29'),
+('8','NOP456789','16','2023-11-29'),
+('9','QRS567890','17','2023-12-01'),
+('10','TUV678901','18','2023-12-01');
+
+/*
+
+Stworzenie dwóch usprawnień w bazie danych biblioteki.
+
+1.W momencie kiedy czytelnik wypożyczy książkę status w tabeli books (available) zmieni się na NIE i odwrotnie w 
+tabeli return_of.
+
+2.Wyświetlanie listy dostepnych książek. 
+
+*/
+
+DELIMITER //
+CREATE TRIGGER after_loan_insert
+AFTER INSERT ON loans
+FOR EACH ROW
+BEGIN
+    UPDATE books
+    SET available = 'NIE'
+    WHERE book_id = NEW.book_id;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER after_return_of_insert
+AFTER INSERT ON return_of
+FOR EACH ROW
+BEGIN
+    UPDATE books
+    SET available = 'TAK'
+    WHERE book_id = NEW.book_id;
+END;
+//
+DELIMITER ;
+
+/* 
+
+Sprawdzenie
+
+*/
+
+INSERT INTO loans VALUES
+('10', 'ABC123456', '19', '2023-12-01');
+
+SELECT * FROM loans;
+
+SELECT * FROM books;
+
+INSERT INTO return_of VALUES
+('11', 'ABC123456', '19', '2023-12-01');
+
+SELECT * FROM return_of;
+
+SELECT * FROM books;
+
+DELIMITER //
+CREATE PROCEDURE ShowAvailableBooks()
+BEGIN
+    SELECT * FROM books
+    WHERE available = 'TAK';
+END;
+//
+DELIMITER ;
+
+/*
+
+Sprawdzenie
+
+*/
+
+CALL ShowAvailableBooks();
+
+/*
+
+Stworzenie dwóch procedur do przeszukiwania bazy danych biblioteki.
+
+1.Znajdowanie czytelników, którzy wypożyczyli książkę i jeszcze jej nie zwrócili.
+
+2.Znajdowanie książek w odpowiednim gatunku.
+
+*/
+
+DELIMITER //
+
+CREATE PROCEDURE ShowReadersWithUnreturnedBooks()
+BEGIN
+    SELECT *
+    FROM readers r
+    LEFT JOIN return_of l ON r.reader_id = l.reader_id
+    WHERE l.reader_id IS NULL;
+END;
+//
+DELIMITER ;
+
+CALL ShowReadersWithUnreturnedBooks();
+
+DELIMITER //
+
+CREATE PROCEDURE ShowBooksByGenre(IN genre_name VARCHAR(32))
+BEGIN
+    SELECT * FROM books
+    WHERE genre = genre_name;
+END;
+//
+DELIMITER ;
+
+CALL ShowBooksByGenre('Fantastyka');
