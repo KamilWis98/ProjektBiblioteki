@@ -1,0 +1,20 @@
+book_id,title,author_id,publication_year,genre,available
+ABC123456,"Echoes of Dawn",ABCD736483,1990-05-15,Fantastyka,TAK
+BCD012345,"Wings of Wonder",GHIJ876234,2005-11-28,Fantastyka,NIE
+CDE901234,"Echoes of Tomorrow",RSTU890234,2018-06-30,Komedia,NIE
+DEF234567,"Whispers in Silence",EFGH125678,2005-11-28,Romans,TAK
+EFG123456,"Visions Unseen",KLMN987234,1990-05-15,Komedia,NIE
+FGH012345,"Journey to Infinity",VWXY456789,1997-06-22,Horror,NIE
+GHI345678,"Fragments of Fate",IJKL987601,2010-09-03,Kryminał,TAK
+HIJ234567,"Fireside Tales",OPQR356723,2010-09-03,Thriller,TAK
+JKL456789,"Shadows of Serenity",MNOP345879,2005-11-28,Dramat,TAK
+KLM345678,"The Silent Path",STUV876590,2000-12-07,Horror,TAK
+MNO567890,"Embers of Eternity",QRST783246,2015-08-12,Horror,TAK
+NOP456789,"Stardust Symphony",WXYZ346789,2018-06-30,Fantastyka,TAK
+PQR678901,"Ripples of Time",UVWX903456,1990-05-15,Fantastyka,NIE
+QRS567890,"Harbor of Dreams",BCDE234786,1995-04-21,Komedia,TAK
+STU789012,"Threads of Destiny",YZAB789034,2000-12-07,Dramat,NIE
+TUV678901,"Secrets Revealed",FGHI569012,2005-11-28,Thriller,TAK
+WXY789012,"Lost Horizons",JKLM781234,2010-09-03,Dramat,NIE
+YZA901234,"Sands of Solitude",CDEF645312,2018-06-30,Horror,NIE
+ZAB890123,"Enigma's Edge",NOPQ124567,1990-05-15,Fantastyka,NIE
